@@ -14,11 +14,9 @@ export const UISlice = createSlice({
   reducers: {
     toggle: (state) => {
       state.modalIsVisible = !state.modalIsVisible;
-      console.log("Azaza toggle");
     },
   },
 });
 
 export const { toggle } = UISlice.actions;
-
 export default UISlice.reducer;
