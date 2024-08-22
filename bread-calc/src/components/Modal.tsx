@@ -3,15 +3,20 @@ import { createPortal } from "react-dom";
 
 import { Recipe } from "../models/types.ts";
 
+import type { RootState } from "@store/store";
+import { useSelector } from "react-redux";
+
 type ModalProps = {
   isOpen: boolean;
   onClose: () => void;
-  recipe: Recipe;
+  recipe: Recipe | null;
 };
 
-const Modal: React.FC<ModalProps> = ({ isOpen, onClose, recipe }) => {
+const Modal = ({ isOpen, onClose, recipe }: ModalProps) => {
+  const { quantityInKg } = useSelector((state: RootState) => state.recipe);
+
   const dialog = useRef<HTMLDialogElement>(null);
-  const [quantity, setQuantity] = useState(1);
+  const [quantity, setQuantity] = useState(quantityInKg);
 
   useEffect(() => {
     if (isOpen) {
@@ -21,27 +26,31 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, recipe }) => {
     }
   }, [isOpen]);
 
-  const handleQuantityChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setQuantity(Number(e.target.value));
+  const handleQuantityChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setQuantity(Number(event.target.value));
   };
 
   return createPortal(
     <dialog ref={dialog} className="modal">
-      <h2>{recipe.name}</h2>
+      <span>
+        <h2>{recipe?.name}</h2>
+        <button onClick={onClose}>Close</button>
+      </span>
+
       <ul>
-        {recipe.components.map((component) => (
+        {recipe?.components.map((component) => (
           <li key={component.name}>
-            {component.name}: {component.amountPerKg * quantity}g
+            {component.name}: {component.amountPerKg * quantity}
           </li>
         ))}
       </ul>
+
       <input
         type="number"
         value={quantity}
         onChange={handleQuantityChange}
         min="1"
       />
-      <button onClick={onClose}>Close</button>
     </dialog>,
     document.getElementById("modal")!
   );

@@ -16,14 +16,11 @@ const recipeSlice = createSlice({
   name: "recipe",
   initialState,
   reducers: {
-    setSelectedRecipe(state, action: PayloadAction<Recipe | null>) {
+    setSelectedRecipe: (state, action: PayloadAction<Recipe | null>) => {
       state.selectedRecipe = action.payload;
-    },
-    setQuantityInKg(state, action: PayloadAction<number>) {
-      state.quantityInKg = action.payload;
     },
   },
 });
 
-export const { setSelectedRecipe, setQuantityInKg } = recipeSlice.actions;
+export const { setSelectedRecipe } = recipeSlice.actions;
 export default recipeSlice.reducer;

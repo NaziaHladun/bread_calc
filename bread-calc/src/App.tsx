@@ -8,24 +8,27 @@ import { Recipe as RecipeType } from "./models/types";
 import type { RootState } from "@store/store";
 import { useSelector, useDispatch } from "react-redux";
 import { toggle } from "@store/features/uiSlice";
-import { useEffect } from "react";
 
 const App: React.FC = () => {
   const { modalIsVisible } = useSelector((state: RootState) => state.UI);
-  const dispatch = useDispatch();
+  const { selectedRecipe } = useSelector((state: RootState) => state.recipe);
 
-  useEffect(() => {
-    console.log("Azaza", modalIsVisible);
-  }, [modalIsVisible]);
+  const dispatch = useDispatch();
 
   return (
     <div className="container">
-      {/* <Modal isOpen={modalIsVisible} onClose={() => dispatch(toggle())} recipe={}/> */}
+      <Modal
+        isOpen={modalIsVisible}
+        onClose={() => dispatch(toggle())}
+        recipe={selectedRecipe}
+      />
       {RECIPES.map((recipe: RecipeType) => (
         <Recipe
           key={recipe.id}
           name={recipe.name}
           onClick={() => dispatch(toggle())}
+          //може мені сюди передавати передавати цілий рецепт і та всередині якраз і буде надсилатися у redux
+          fullRecipe={recipe}
         />
       ))}
     </div>
