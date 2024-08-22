@@ -14,10 +14,17 @@
 }
 
 .recipe-card {
+  transition: transform ease 0.3s, box-shadow ease 0.3s;
   padding: 2em;
   width: 250px;
-  border: 1px solid;
   border-radius: 5%;
+  border: 0.1px solid rgb(219, 219, 219);
+}
+
+.recipe-card:hover {
+  box-shadow: 12px 12px 12px rgba(0, 0, 0, 0.1) inset,
+    -10px -10px 10px white inset;
+  border: none;
 }
 
 .recipe-card p {
