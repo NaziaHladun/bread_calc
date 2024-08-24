@@ -18,7 +18,7 @@ const Recipe = ({ name, onClick, fullRecipe }: RecipeProps) => {
 
   return (
     <div className="recipe-card" onClick={onClick}>
-      <p>{name}</p>
+      <h2>{name}</h2>
     </div>
   );
 };

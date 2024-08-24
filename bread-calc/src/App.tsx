@@ -27,7 +27,6 @@ const App: React.FC = () => {
           key={recipe.id}
           name={recipe.name}
           onClick={() => dispatch(toggle())}
-          //може мені сюди передавати передавати цілий рецепт і та всередині якраз і буде надсилатися у redux
           fullRecipe={recipe}
         />
       ))}

@@ -32,25 +32,35 @@ const Modal = ({ isOpen, onClose, recipe }: ModalProps) => {
 
   return createPortal(
     <dialog ref={dialog} className="modal">
-      <span>
+      <div className="modal-header">
+        <button onClick={onClose}>
+          <p>Close</p>
+        </button>
         <h2>{recipe?.name}</h2>
-        <button onClick={onClose}>Close</button>
-      </span>
-
-      <ul>
-        {recipe?.components.map((component) => (
-          <li key={component.name}>
-            {component.name}: {component.amountPerKg * quantity}
-          </li>
-        ))}
-      </ul>
-
-      <input
-        type="number"
-        value={quantity}
-        onChange={handleQuantityChange}
-        min="1"
-      />
+      </div>
+      <div className="modal-components">
+        <div className="list-component">
+          <ul>
+            {recipe?.components.map((component) => (
+              <li key={component.name}>
+                <p>
+                  {component.name}: <b>{component.amountPerKg * quantity}</b>
+                </p>
+              </li>
+            ))}
+          </ul>
+        </div>
+        <div className="quantity-component">
+          <button>-</button>
+          <input
+            type="number"
+            value={quantity}
+            onChange={handleQuantityChange}
+            min="1"
+          />
+          <button>+</button>
+        </div>
+      </div>
     </dialog>,
     document.getElementById("modal")!
   );
