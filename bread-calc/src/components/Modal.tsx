@@ -1,10 +1,15 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
 
 import { Recipe } from "../models/types.ts";
 
 import type { RootState } from "@store/store";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  decrementQuantity,
+  incrementQuantity,
+  setQuantity,
+} from "@store/features/recipeSlice.ts";
 
 type ModalProps = {
   isOpen: boolean;
@@ -16,18 +21,20 @@ const Modal = ({ isOpen, onClose, recipe }: ModalProps) => {
   const { quantityInKg } = useSelector((state: RootState) => state.recipe);
 
   const dialog = useRef<HTMLDialogElement>(null);
-  const [quantity, setQuantity] = useState(quantityInKg);
+
+  const dispatch = useDispatch();
 
   useEffect(() => {
     if (isOpen) {
       dialog.current?.showModal();
     } else {
       dialog.current?.close();
+      dispatch(setQuantity(1));
     }
-  }, [isOpen]);
+  }, [isOpen, dispatch]);
 
   const handleQuantityChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setQuantity(Number(event.target.value));
+    dispatch(setQuantity(Number(event.target.value)));
   };
 
   return createPortal(
@@ -44,21 +51,22 @@ const Modal = ({ isOpen, onClose, recipe }: ModalProps) => {
             {recipe?.components.map((component) => (
               <li key={component.name}>
                 <p>
-                  {component.name}: <b>{component.amountPerKg * quantity}</b>
+                  {component.name}:{" "}
+                  <b>{component.amountPerKg * quantityInKg}</b>
                 </p>
               </li>
             ))}
           </ul>
         </div>
         <div className="quantity-component">
-          <button>-</button>
+          <button onClick={() => dispatch(decrementQuantity())}>-</button>
           <input
             type="number"
-            value={quantity}
+            value={quantityInKg}
             onChange={handleQuantityChange}
             min="1"
           />
-          <button>+</button>
+          <button onClick={() => dispatch(incrementQuantity())}>+</button>
         </div>
       </div>
     </dialog>,

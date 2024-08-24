@@ -1,4 +1,3 @@
-import { useEffect } from "react";
 import { Recipe as RecipeType } from "../models/types";
 import { useDispatch } from "react-redux";
 import { setSelectedRecipe } from "@store/features/recipeSlice";
@@ -12,12 +11,13 @@ type RecipeProps = {
 const Recipe = ({ name, onClick, fullRecipe }: RecipeProps) => {
   const dispatch = useDispatch();
 
-  useEffect(() => {
+  const handleClick = () => {
     dispatch(setSelectedRecipe(fullRecipe));
-  }, [dispatch, fullRecipe]);
+    onClick(); // Відкриваємо модальне вікно після встановлення вибраного рецепта
+  };
 
   return (
-    <div className="recipe-card" onClick={onClick}>
+    <div className="recipe-card" onClick={handleClick}>
       <h2>{name}</h2>
     </div>
   );

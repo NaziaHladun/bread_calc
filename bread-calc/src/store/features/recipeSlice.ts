@@ -19,8 +19,26 @@ const recipeSlice = createSlice({
     setSelectedRecipe: (state, action: PayloadAction<Recipe | null>) => {
       state.selectedRecipe = action.payload;
     },
+    incrementQuantity: (state) => {
+      state.quantityInKg += 1;
+    },
+    decrementQuantity: (state) => {
+      if (state.quantityInKg < 1) {
+        return;
+      }
+
+      state.quantityInKg -= 1;
+    },
+    setQuantity: (state, action: PayloadAction<number>) => {
+      state.quantityInKg = action.payload;
+    },
   },
 });
 
-export const { setSelectedRecipe } = recipeSlice.actions;
+export const {
+  setSelectedRecipe,
+  incrementQuantity,
+  decrementQuantity,
+  setQuantity,
+} = recipeSlice.actions;
 export default recipeSlice.reducer;
