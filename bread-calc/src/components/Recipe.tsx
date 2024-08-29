@@ -13,7 +13,7 @@ const Recipe = ({ name, onClick, fullRecipe }: RecipeProps) => {
 
   const handleClick = () => {
     dispatch(setSelectedRecipe(fullRecipe));
-    onClick(); // Відкриваємо модальне вікно після встановлення вибраного рецепта
+    onClick();
   };
 
   return (

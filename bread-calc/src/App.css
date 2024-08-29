@@ -1,5 +1,5 @@
 #root {
-  max-width: 1280px;
+  max-width: 1400px;
   margin: 0 auto;
   text-align: center;
 }
@@ -27,7 +27,7 @@
   justify-content: center;
   width: 100%;
   gap: 2em;
-  margin: 40px 0;
+  margin: 80px 0 10px 0;
 }
 
 h2 {
@@ -55,6 +55,35 @@ h2 {
   box-shadow: 12px 12px 12px rgba(0, 0, 0, 0.1) inset,
     -10px -10px 10px white inset;
   border-color: transparent;
+}
+
+header {
+  background-color: #e6e6e6;
+
+  position: fixed;
+  display: flex;
+  top: 0;
+  left: 0;
+
+  width: 100%;
+  height: 70px;
+
+  border-bottom-left-radius: 15%;
+  border-bottom-right-radius: 15%;
+}
+
+header input {
+  margin: auto;
+  background-color: white;
+  border: none;
+  border-radius: 10px;
+  padding: 10px 15px;
+
+  color: #333;
+}
+
+input:focus {
+  outline: none;
 }
 
 .modal {
