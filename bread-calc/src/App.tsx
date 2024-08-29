@@ -2,7 +2,6 @@ import "./App.css";
 import Recipe from "./components/Recipe";
 import Modal from "./components/Modal";
 
-// import RECIPES from "./recipes";
 import { Recipe as RecipeType } from "./models/types";
 
 import type { RootState } from "@store/store";
