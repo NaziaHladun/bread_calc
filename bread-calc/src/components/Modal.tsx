@@ -10,6 +10,7 @@ import {
   incrementQuantity,
   setQuantity,
 } from "@store/features/recipeSlice.ts";
+import CloseButton from "./CloseButton.tsx";
 
 type ModalProps = {
   isOpen: boolean;
@@ -40,9 +41,7 @@ const Modal = ({ isOpen, onClose, recipe }: ModalProps) => {
   return createPortal(
     <dialog ref={dialog} className="modal">
       <div className="modal-header">
-        <button onClick={onClose}>
-          <p>Close</p>
-        </button>
+        <CloseButton onClose={onClose} />
         <h2>{recipe?.name}</h2>
       </div>
       <div className="modal-components">
