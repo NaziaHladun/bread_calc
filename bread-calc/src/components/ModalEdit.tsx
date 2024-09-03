@@ -6,11 +6,15 @@ import { Recipe } from "../models/types";
 import CloseButton from "./CloseButton";
 
 import { database } from "../firebase";
-import { ref, push, set } from "firebase/database";
+import { ref, update, push, set } from "firebase/database"; // Додано push і set для створення нового рецепта
+import { useDispatch } from "react-redux";
+import { AppDispatch } from "@store/store";
+import { fetchRecipes } from "@store/features/recipeSlice";
 
 type ModalProps = {
   isOpen: boolean;
   onClose: () => void;
+  recipeToEdit: Recipe | null; // Передаємо рецепт для редагування
 };
 
 type Component = {
@@ -18,20 +22,36 @@ type Component = {
   amount: number;
 };
 
-const ModalEdit: React.FC<ModalProps> = ({ isOpen, onClose }) => {
+const ModalEdit: React.FC<ModalProps> = ({ isOpen, onClose, recipeToEdit }) => {
   const dialog = useRef<HTMLDialogElement>(null);
   const [recipeName, setRecipeName] = useState<string>("");
   const [components, setComponents] = useState<Component[]>([
     { name: "", amount: 0 },
   ]);
 
+  const dispatch = useDispatch<AppDispatch>();
+
   useEffect(() => {
     if (isOpen) {
       dialog.current?.showModal();
+
+      // Якщо редагуємо існуючий рецепт, заповнюємо поля
+      if (recipeToEdit) {
+        setRecipeName(recipeToEdit.name);
+        setComponents(
+          recipeToEdit.components.map((component) => ({
+            name: component.name,
+            amount: component.amountPerKg,
+          }))
+        );
+      }
     } else {
       dialog.current?.close();
+      // Скидаємо поля при закритті модального вікна
+      setRecipeName("");
+      setComponents([{ name: "", amount: 0 }]);
     }
-  }, [isOpen]);
+  }, [isOpen, recipeToEdit]);
 
   const handleComponentChange = (
     index: number,
@@ -56,26 +76,41 @@ const ModalEdit: React.FC<ModalProps> = ({ isOpen, onClose }) => {
   };
 
   const handleSaveRecipe = async () => {
-    const newRecipeRef = push(ref(database, "recipes")); // Створює новий унікальний ключ (ID)
-
     try {
-      const newRecipe: Recipe = {
-        id: newRecipeRef.key as string,
-        name: recipeName,
-        components: components.map((component) => ({
-          name: component.name,
-          amountPerKg: component.amount,
-        })),
-      };
+      let newRecipe: Recipe;
 
-      console.log(newRecipe);
-      await set(newRecipeRef, newRecipe); // Save recipe in Firebase
+      if (recipeToEdit) {
+        // Оновлення існуючого рецепта
+        const recipeRef = ref(database, `recipes/${recipeToEdit.id}`);
+        newRecipe = {
+          id: recipeToEdit.id,
+          name: recipeName,
+          components: components.map((component) => ({
+            name: component.name,
+            amountPerKg: component.amount,
+          })),
+        };
+        await update(recipeRef, newRecipe);
+      } else {
+        // Створення нового рецепта
+        const newRecipeRef = push(ref(database, "recipes"));
+        newRecipe = {
+          id: newRecipeRef.key as string,
+          name: recipeName,
+          components: components.map((component) => ({
+            name: component.name,
+            amountPerKg: component.amount,
+          })),
+        };
+        await set(newRecipeRef, newRecipe);
+      }
 
       setRecipeName("");
       setComponents([{ name: "", amount: 0 }]);
       onClose();
+      dispatch(fetchRecipes());
     } catch (error) {
-      console.error("Помилка при збереженні рецепта:", error); //TODO: error message for user
+      console.error("Помилка при збереженні рецепта:", error); // TODO: повідомлення про помилку для користувача
     }
   };
 
@@ -83,7 +118,7 @@ const ModalEdit: React.FC<ModalProps> = ({ isOpen, onClose }) => {
     <dialog ref={dialog} className="modal">
       <div className="modal-header">
         <CloseButton onClose={onClose} />
-        <h2>Редагування рецепта</h2>
+        <h2>{recipeToEdit ? "Редагування рецепта" : "Додавання рецепта"}</h2>
       </div>
       <div className="edit">
         <input

@@ -3,14 +3,20 @@ import { createPortal } from "react-dom";
 
 import { Recipe } from "../models/types.ts";
 
-import type { RootState } from "@store/store";
+import type { AppDispatch, RootState } from "@store/store";
 import { useDispatch, useSelector } from "react-redux";
 import {
   decrementQuantity,
+  fetchRecipes,
   incrementQuantity,
   setQuantity,
+  setSelectedRecipe,
 } from "@store/features/recipeSlice.ts";
+import { toggleEditModal } from "@store/features/uiSlice.ts";
 import CloseButton from "./CloseButton.tsx";
+
+import { ref, remove } from "firebase/database";
+import { database } from "../firebase";
 
 type ModalProps = {
   isOpen: boolean;
@@ -23,7 +29,7 @@ const Modal = ({ isOpen, onClose, recipe }: ModalProps) => {
 
   const dialog = useRef<HTMLDialogElement>(null);
 
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<AppDispatch>();
 
   useEffect(() => {
     if (isOpen) {
@@ -36,6 +42,27 @@ const Modal = ({ isOpen, onClose, recipe }: ModalProps) => {
 
   const handleQuantityChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     dispatch(setQuantity(Number(event.target.value)));
+  };
+
+  const handleEdit = () => {
+    if (recipe) {
+      dispatch(setSelectedRecipe(recipe)); // Вибираємо рецепт для редагування
+      dispatch(toggleEditModal()); // Відкриваємо модальне вікно редагування
+      onClose();
+    }
+  };
+
+  const handleDelete = async () => {
+    if (recipe) {
+      try {
+        const recipeRef = ref(database, `recipes/${recipe.id}`);
+        await remove(recipeRef); // Видаляємо рецепт з Firebase
+        onClose();
+        dispatch(fetchRecipes());
+      } catch (error) {
+        console.error("Помилка при видаленні рецепта:", error); // TODO: показати помилку користувачу
+      }
+    }
   };
 
   return createPortal(
@@ -67,6 +94,14 @@ const Modal = ({ isOpen, onClose, recipe }: ModalProps) => {
           />
           <button onClick={() => dispatch(incrementQuantity())}>+</button>
         </div>
+      </div>
+      <div className="save-section">
+        <button className="action edit" onClick={handleEdit}>
+          Редагувати
+        </button>
+        <button className="action delete" onClick={handleDelete}>
+          Видалити
+        </button>
       </div>
     </dialog>,
     document.getElementById("modal")!
