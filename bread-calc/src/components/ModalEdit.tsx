@@ -9,7 +9,7 @@ import { database } from "../firebase";
 import { ref, update, push, set } from "firebase/database"; // Додано push і set для створення нового рецепта
 import { useDispatch } from "react-redux";
 import { AppDispatch } from "@store/store";
-import { fetchRecipes } from "@store/features/recipeSlice";
+import { fetchRecipes, setSelectedRecipe } from "@store/features/recipeSlice";
 
 type ModalProps = {
   isOpen: boolean;
@@ -114,10 +114,15 @@ const ModalEdit: React.FC<ModalProps> = ({ isOpen, onClose, recipeToEdit }) => {
     }
   };
 
+  const handleClose = () => {
+    dispatch(setSelectedRecipe(null));
+    onClose();
+  };
+
   return createPortal(
     <dialog ref={dialog} className="modal">
       <div className="modal-header">
-        <CloseButton onClose={onClose} />
+        <CloseButton onClose={handleClose} />
         <h2>{recipeToEdit ? "Редагування рецепта" : "Додавання рецепта"}</h2>
       </div>
       <div className="edit">

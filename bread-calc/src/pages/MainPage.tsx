@@ -6,7 +6,7 @@ import ModalEdit from "../components/ModalEdit";
 
 import { Recipe as RecipeType } from "../models/types";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import type { AppDispatch, RootState } from "@store/store";
 import { useSelector, useDispatch } from "react-redux";
 import { toggleModal, toggleEditModal } from "@store/features/uiSlice";
@@ -17,20 +17,25 @@ const MainPage = () => {
   const { modalIsVisible, editModalIsVisible } = useSelector(
     (state: RootState) => state.UI
   );
-  const { selectedRecipe, searchedRecipes } = useSelector(
+  const { selectedRecipe, searchedRecipes, allRecipes } = useSelector(
     (state: RootState) => state.recipe
   );
+
+  const [queryString, setQueryString] = useState("");
 
   const dispatch = useDispatch<AppDispatch>();
 
   useEffect(() => {
     dispatch(fetchRecipes());
-    dispatch(setSearchRecipe(""));
   }, []);
+
+  useEffect(() => {
+    dispatch(setSearchRecipe(queryString));
+  }, [queryString, allRecipes]);
 
   return (
     <>
-      <Header />
+      <Header setQueryString={setQueryString} />
       <div className="container">
         <Modal
           isOpen={modalIsVisible}

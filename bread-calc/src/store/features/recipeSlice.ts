@@ -63,15 +63,10 @@ const recipeSlice = createSlice({
           .includes(action.payload.toLocaleLowerCase())
       );
     },
-    setAllRecipes: (state, action: PayloadAction<Recipe[]>) => {
-      state.allRecipes = action.payload;
-      state.searchedRecipes = action.payload;
-    },
   },
   extraReducers: (builder) => {
     builder.addCase(fetchRecipes.fulfilled, (state, action) => {
       state.allRecipes = action.payload;
-      state.searchedRecipes = action.payload;
     });
   },
 });
@@ -82,6 +77,5 @@ export const {
   decrementQuantity,
   setQuantity,
   setSearchRecipe,
-  setAllRecipes,
 } = recipeSlice.actions;
 export default recipeSlice.reducer;

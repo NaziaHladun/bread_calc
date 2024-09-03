@@ -65,10 +65,15 @@ const Modal = ({ isOpen, onClose, recipe }: ModalProps) => {
     }
   };
 
+  const handleClose = () => {
+    dispatch(setSelectedRecipe(null));
+    onClose();
+  };
+
   return createPortal(
     <dialog ref={dialog} className="modal">
       <div className="modal-header">
-        <CloseButton onClose={onClose} />
+        <CloseButton onClose={handleClose} />
         <h2>{recipe?.name}</h2>
       </div>
       <div className="modal-components">
