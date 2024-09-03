@@ -124,7 +124,7 @@ input:focus {
   display: flex;
   flex-wrap: wrap;
   margin: auto 0;
-  height: 80%;
+  height: 70%;
   align-items: stretch;
 }
 
@@ -390,6 +390,40 @@ button.save {
 
 button.save:hover {
   background-color: #658d5f;
+}
+
+/* BUTTONS FOR EDIT & DELETE RECIPE */
+button.action {
+  transition: all ease 0.3s;
+  width: 100px;
+  height: 40px;
+  margin: 9px;
+
+  border: none;
+  border-radius: 10%;
+  background-color: #8d8d8d;
+  box-shadow: none;
+
+  color: rgb(255, 255, 255);
+  font-size: 1rem;
+
+  cursor: pointer;
+}
+
+button.edit {
+  background-color: #bbb16f;
+}
+
+button.edit:hover {
+  background-color: #d9cc74;
+}
+
+button.delete {
+  background-color: #bb6f6f;
+}
+
+button.delete:hover {
+  background-color: #df8989;
 }
 
 /* ADD RECIPE BUTTON */
