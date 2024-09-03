@@ -4,7 +4,7 @@ export type Component = {
 };
 
 export type Recipe = {
-  id: number;
+  id: string;
   name: string;
   components: Component[];
 };

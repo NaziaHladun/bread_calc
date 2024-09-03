@@ -2,18 +2,18 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 import { Recipe } from "../../models/types.ts";
 
-import RECIPES from "../../recipes.ts";
-
 type RecipeState = {
   selectedRecipe: Recipe | null;
   quantityInKg: number;
-  searchedRecipes: Recipe[] | null;
+  allRecipes: Recipe[] | null | undefined;
+  searchedRecipes: Recipe[] | null | undefined;
 };
 
 const initialState: RecipeState = {
   selectedRecipe: null,
   quantityInKg: 1,
-  searchedRecipes: RECIPES,
+  allRecipes: [],
+  searchedRecipes: [],
 };
 
 const recipeSlice = createSlice({
@@ -37,11 +37,15 @@ const recipeSlice = createSlice({
       state.quantityInKg = action.payload;
     },
     setSearchRecipe: (state, action: PayloadAction<string>) => {
-      state.searchedRecipes = RECIPES.filter((recipe: Recipe) =>
+      state.searchedRecipes = state.allRecipes?.filter((recipe: Recipe) =>
         recipe.name
           .toLocaleLowerCase()
           .includes(action.payload.toLocaleLowerCase())
       );
+    },
+    setAllRecipes: (state, action: PayloadAction<Recipe[]>) => {
+      state.allRecipes = action.payload;
+      state.searchedRecipes = action.payload;
     },
   },
 });
@@ -52,5 +56,6 @@ export const {
   decrementQuantity,
   setQuantity,
   setSearchRecipe,
+  setAllRecipes,
 } = recipeSlice.actions;
 export default recipeSlice.reducer;

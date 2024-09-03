@@ -5,6 +5,9 @@ import ComponentsInputs from "./ComponentsInputs";
 import { Recipe } from "../models/types";
 import CloseButton from "./CloseButton";
 
+import { database } from "../firebase";
+import { ref, push, set } from "firebase/database";
+
 type ModalProps = {
   isOpen: boolean;
   onClose: () => void;
@@ -52,22 +55,28 @@ const ModalEdit: React.FC<ModalProps> = ({ isOpen, onClose }) => {
     setComponents(updatedComponents);
   };
 
-  const handleSaveRecipe = () => {
-    const newRecipe: Recipe = {
-      id: 111, //temporary decision
-      name: recipeName,
-      components: components.map((component) => ({
-        name: component.name,
-        amountPerKg: component.amount,
-      })),
-    };
+  const handleSaveRecipe = async () => {
+    const newRecipeRef = push(ref(database, "recipes")); // Створює новий унікальний ключ (ID)
 
-    //save logic
-    console.log("Новий рецепт:", newRecipe);
+    try {
+      const newRecipe: Recipe = {
+        id: newRecipeRef.key as string,
+        name: recipeName,
+        components: components.map((component) => ({
+          name: component.name,
+          amountPerKg: component.amount,
+        })),
+      };
 
-    setRecipeName("");
-    setComponents([{ name: "", amount: 0 }]);
-    onClose();
+      console.log(newRecipe);
+      await set(newRecipeRef, newRecipe); // Save recipe in Firebase
+
+      setRecipeName("");
+      setComponents([{ name: "", amount: 0 }]);
+      onClose();
+    } catch (error) {
+      console.error("Помилка при збереженні рецепта:", error); //TODO: error message for user
+    }
   };
 
   return createPortal(
