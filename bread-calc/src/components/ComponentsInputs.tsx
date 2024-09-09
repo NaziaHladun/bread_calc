@@ -41,7 +41,7 @@ const ComponentsInputs: React.FC<ComponentInputProps> = ({
         placeholder="Кількість"
         name={`component-amount-${index}`}
         autoComplete="off"
-        value={component.amount}
+        value={component.amount || ""}
         onChange={(e) =>
           handleComponentChange(index, "amount", Number(e.target.value))
         }
