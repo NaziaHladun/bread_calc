@@ -14,7 +14,7 @@ import { fetchRecipes, setSelectedRecipe } from "@store/features/recipeSlice";
 type ModalProps = {
   isOpen: boolean;
   onClose: () => void;
-  recipeToEdit: Recipe | null; // Передаємо рецепт для редагування
+  recipeToEdit: Recipe | null;
 };
 
 type Component = {
@@ -107,6 +107,7 @@ const ModalEdit: React.FC<ModalProps> = ({ isOpen, onClose, recipeToEdit }) => {
 
       setRecipeName("");
       setComponents([{ name: "", amount: 0 }]);
+      dispatch(setSelectedRecipe(null));
       onClose();
       dispatch(fetchRecipes());
     } catch (error) {
