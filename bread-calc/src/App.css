@@ -48,13 +48,18 @@ h2 {
 
 /* RECIPE CARD STYLING */
 .recipe-card {
-  transition: transform ease 0.3s, box-shadow ease 0.3s;
-  padding: 2em;
+  display: flex;
   margin: 5px;
   width: 250px;
+  height: 140px;
 
+  transition: transform ease 0.3s, box-shadow ease 0.3s;
   border-radius: 5%;
   border: 0.1px solid rgb(219, 219, 219);
+}
+
+.recipe-card h2 {
+  margin: auto;
 }
 
 .recipe-card:hover {
@@ -114,6 +119,9 @@ input:focus {
 
 .modal-header {
   width: 95%;
+  display: flex;
+  align-items: center;
+  gap: 2%;
 }
 
 .modal-header h2 {
@@ -391,11 +399,16 @@ button.save {
 button.save:hover {
   background-color: #658d5f;
 }
+/* ACTION SECTION */
+.action-section {
+  display: flex;
+}
 
 /* BUTTONS FOR EDIT & DELETE RECIPE */
 button.action {
+  display: flex;
   transition: all ease 0.3s;
-  width: 100px;
+  width: 50px;
   height: 40px;
   margin: 9px;
 
@@ -408,6 +421,10 @@ button.action {
   font-size: 1rem;
 
   cursor: pointer;
+}
+
+button.action svg {
+  margin: auto;
 }
 
 button.edit {
