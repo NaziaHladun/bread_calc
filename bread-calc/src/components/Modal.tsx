@@ -3,8 +3,8 @@ import { createPortal } from "react-dom";
 
 import { Recipe } from "../models/types.ts";
 
-import type { AppDispatch, RootState } from "@store/store";
 import { useDispatch, useSelector } from "react-redux";
+import type { AppDispatch, RootState } from "@store/store";
 import {
   decrementQuantity,
   fetchRecipes,
@@ -13,7 +13,9 @@ import {
   setSelectedRecipe,
 } from "@store/features/recipeSlice.ts";
 import { toggleEditModal } from "@store/features/uiSlice.ts";
+
 import CloseButton from "./CloseButton.tsx";
+import ActionButtons from "./ActionButtons.tsx";
 
 import { ref, remove } from "firebase/database";
 import { database } from "../firebase";
@@ -22,9 +24,10 @@ type ModalProps = {
   isOpen: boolean;
   onClose: () => void;
   recipe: Recipe | null;
+  isAdmin: boolean;
 };
 
-const Modal = ({ isOpen, onClose, recipe }: ModalProps) => {
+const Modal = ({ isOpen, onClose, recipe, isAdmin }: ModalProps) => {
   const { quantityInKg } = useSelector((state: RootState) => state.recipe);
 
   const dialog = useRef<HTMLDialogElement>(null);
@@ -46,8 +49,8 @@ const Modal = ({ isOpen, onClose, recipe }: ModalProps) => {
 
   const handleEdit = () => {
     if (recipe) {
-      dispatch(setSelectedRecipe(recipe)); // Вибираємо рецепт для редагування
-      dispatch(toggleEditModal()); // Відкриваємо модальне вікно редагування
+      dispatch(setSelectedRecipe(recipe));
+      dispatch(toggleEditModal());
       onClose();
     }
   };
@@ -56,7 +59,7 @@ const Modal = ({ isOpen, onClose, recipe }: ModalProps) => {
     if (recipe) {
       try {
         const recipeRef = ref(database, `recipes/${recipe.id}`);
-        await remove(recipeRef); // Видаляємо рецепт з Firebase
+        await remove(recipeRef);
         onClose();
         dispatch(fetchRecipes());
       } catch (error) {
@@ -72,9 +75,12 @@ const Modal = ({ isOpen, onClose, recipe }: ModalProps) => {
 
   return createPortal(
     <dialog ref={dialog} className="modal">
+      <CloseButton onClose={handleClose} />
       <div className="modal-header">
-        <CloseButton onClose={handleClose} />
         <h2>{recipe?.name}</h2>
+        {isAdmin && (
+          <ActionButtons handleEdit={handleEdit} handleDelete={handleDelete} />
+        )}
       </div>
       <div className="modal-components">
         <div className="list-component">
@@ -99,14 +105,6 @@ const Modal = ({ isOpen, onClose, recipe }: ModalProps) => {
           />
           <button onClick={() => dispatch(incrementQuantity())}>+</button>
         </div>
-      </div>
-      <div className="save-section">
-        <button className="action edit" onClick={handleEdit}>
-          Редагувати
-        </button>
-        <button className="action delete" onClick={handleDelete}>
-          Видалити
-        </button>
       </div>
     </dialog>,
     document.getElementById("modal")!

@@ -25,6 +25,8 @@ const MainPage = () => {
 
   const dispatch = useDispatch<AppDispatch>();
 
+  const isAdmin = localStorage.getItem("isAdmin") === "true";
+
   useEffect(() => {
     dispatch(fetchRecipes());
   }, []);
@@ -41,6 +43,7 @@ const MainPage = () => {
           isOpen={modalIsVisible}
           onClose={() => dispatch(toggleModal())}
           recipe={selectedRecipe}
+          isAdmin={isAdmin}
         />
         <ModalEdit
           isOpen={editModalIsVisible}
@@ -56,7 +59,7 @@ const MainPage = () => {
           />
         ))}
       </div>
-      <AddRecipeButton />
+      {isAdmin && <AddRecipeButton />}
     </>
   );
 };
