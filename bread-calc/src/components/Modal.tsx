@@ -3,26 +3,36 @@ import { createPortal } from "react-dom";
 
 import { Recipe } from "../models/types.ts";
 
-import type { RootState } from "@store/store";
 import { useDispatch, useSelector } from "react-redux";
+import type { AppDispatch, RootState } from "@store/store";
 import {
   decrementQuantity,
+  fetchRecipes,
   incrementQuantity,
   setQuantity,
+  setSelectedRecipe,
 } from "@store/features/recipeSlice.ts";
+import { toggleEditModal } from "@store/features/uiSlice.ts";
+
+import CloseButton from "./CloseButton.tsx";
+import ActionButtons from "./ActionButtons.tsx";
+
+import { ref, remove } from "firebase/database";
+import { database } from "../firebase";
 
 type ModalProps = {
   isOpen: boolean;
   onClose: () => void;
   recipe: Recipe | null;
+  isAdmin: boolean;
 };
 
-const Modal = ({ isOpen, onClose, recipe }: ModalProps) => {
+const Modal = ({ isOpen, onClose, recipe, isAdmin }: ModalProps) => {
   const { quantityInKg } = useSelector((state: RootState) => state.recipe);
 
   const dialog = useRef<HTMLDialogElement>(null);
 
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<AppDispatch>();
 
   useEffect(() => {
     if (isOpen) {
@@ -37,13 +47,40 @@ const Modal = ({ isOpen, onClose, recipe }: ModalProps) => {
     dispatch(setQuantity(Number(event.target.value)));
   };
 
+  const handleEdit = () => {
+    if (recipe) {
+      dispatch(setSelectedRecipe(recipe));
+      dispatch(toggleEditModal());
+      onClose();
+    }
+  };
+
+  const handleDelete = async () => {
+    if (recipe) {
+      try {
+        const recipeRef = ref(database, `recipes/${recipe.id}`);
+        await remove(recipeRef);
+        onClose();
+        dispatch(fetchRecipes());
+      } catch (error) {
+        console.error("Помилка при видаленні рецепта:", error); // TODO: показати помилку користувачу
+      }
+    }
+  };
+
+  const handleClose = () => {
+    dispatch(setSelectedRecipe(null));
+    onClose();
+  };
+
   return createPortal(
     <dialog ref={dialog} className="modal">
+      <CloseButton onClose={handleClose} />
       <div className="modal-header">
-        <button onClick={onClose}>
-          <p>Close</p>
-        </button>
         <h2>{recipe?.name}</h2>
+        {isAdmin && (
+          <ActionButtons handleEdit={handleEdit} handleDelete={handleDelete} />
+        )}
       </div>
       <div className="modal-components">
         <div className="list-component">

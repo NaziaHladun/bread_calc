@@ -1,19 +1,39 @@
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 import { Recipe } from "../../models/types.ts";
+import { get, ref } from "firebase/database";
+import { database } from "../../firebase.ts";
 
-import RECIPES from "../../recipes.ts";
+export const fetchRecipes = createAsyncThunk("recipes", async () => {
+  try {
+    const recipesRef = ref(database, "recipes");
+    const snapshot = await get(recipesRef);
+    const data = snapshot.val();
+
+    if (data) {
+      const recipesArray = Object.keys(data).map((key) => ({
+        id: key,
+        ...data[key],
+      }));
+      return recipesArray;
+    }
+  } catch (error) {
+    console.error("Помилка при завантаженні рецептів:", error); // TODO: show error to user
+  }
+});
 
 type RecipeState = {
   selectedRecipe: Recipe | null;
   quantityInKg: number;
-  searchedRecipes: Recipe[] | null;
+  allRecipes: Recipe[] | null | undefined;
+  searchedRecipes: Recipe[] | null | undefined;
 };
 
 const initialState: RecipeState = {
   selectedRecipe: null,
   quantityInKg: 1,
-  searchedRecipes: RECIPES,
+  allRecipes: [],
+  searchedRecipes: [],
 };
 
 const recipeSlice = createSlice({
@@ -37,12 +57,17 @@ const recipeSlice = createSlice({
       state.quantityInKg = action.payload;
     },
     setSearchRecipe: (state, action: PayloadAction<string>) => {
-      state.searchedRecipes = RECIPES.filter((recipe: Recipe) =>
+      state.searchedRecipes = state.allRecipes?.filter((recipe: Recipe) =>
         recipe.name
           .toLocaleLowerCase()
           .includes(action.payload.toLocaleLowerCase())
       );
     },
+  },
+  extraReducers: (builder) => {
+    builder.addCase(fetchRecipes.fulfilled, (state, action) => {
+      state.allRecipes = action.payload;
+    });
   },
 });
 

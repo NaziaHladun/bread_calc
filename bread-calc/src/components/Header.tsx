@@ -1,11 +1,10 @@
-import { setSearchRecipe } from "@store/features/recipeSlice";
-import { useDispatch } from "react-redux";
+type HeaderProps = {
+  setQueryString: (val: string) => void;
+};
 
-const Header = () => {
-  const dispatch = useDispatch();
-
+const Header = ({ setQueryString }: HeaderProps) => {
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    dispatch(setSearchRecipe(event.target.value));
+    setQueryString(event.target.value);
   };
 
   return (

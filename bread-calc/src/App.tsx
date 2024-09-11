@@ -1,42 +1,24 @@
 import "./App.css";
-import Recipe from "./components/Recipe";
-import Modal from "./components/Modal";
+import { createBrowserRouter, RouterProvider } from "react-router-dom";
 
-import { Recipe as RecipeType } from "./models/types";
+import MainPage from "./pages/MainPage";
+import RootLayout from "./pages/RootLayout";
+import AuthPage from "./pages/AuthPage";
 
-import type { RootState } from "@store/store";
-import { useSelector, useDispatch } from "react-redux";
-import { toggle } from "@store/features/uiSlice";
-import Header from "./components/Header";
+const router = createBrowserRouter([
+  {
+    path: "/",
+    element: <RootLayout />,
+    children: [
+      { index: true, element: <MainPage /> },
+      { path: "/", element: <MainPage /> },
+      { path: "/admin", element: <AuthPage /> },
+    ],
+  },
+]);
 
 const App: React.FC = () => {
-  const { modalIsVisible } = useSelector((state: RootState) => state.UI);
-  const { selectedRecipe, searchedRecipes } = useSelector(
-    (state: RootState) => state.recipe
-  );
-
-  const dispatch = useDispatch();
-
-  return (
-    <>
-      <Header />
-      <div className="container">
-        <Modal
-          isOpen={modalIsVisible}
-          onClose={() => dispatch(toggle())}
-          recipe={selectedRecipe}
-        />
-        {searchedRecipes?.map((recipe: RecipeType) => (
-          <Recipe
-            key={recipe.id}
-            name={recipe.name}
-            onClick={() => dispatch(toggle())}
-            fullRecipe={recipe}
-          />
-        ))}
-      </div>
-    </>
-  );
+  return <RouterProvider router={router} />;
 };
 
 export default App;
